@@ -1,12 +1,19 @@
 {
-  "name": "echo-tutorial-2",
+  "name": "ews-tutorial",
   "version": "2.0.0",
   "description": "Let's build a node.js web server using test-first methods!",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "lint": "standard source/**/*.js",
+    "pretest": "npm run lint",
+    "test": "blue-tape source/**/*.test.js | tap-spec"
   },
   "keywords": [],
   "author": "Matt McMahon <matt@broken-toys.com> (https://broken-toys.com/)",
-  "license": "ISC"
+  "license": "ISC",
+  "devDependencies": {
+    "blue-tape": "^1.0.0",
+    "standard": "^10.0.3",
+    "tap-spec": "^4.1.1"
+  }
 }
