@@ -3,6 +3,6 @@
 
 module.exports = {
   create () {
-    return {}
+    return Promise.resolve({})
   }
 }
