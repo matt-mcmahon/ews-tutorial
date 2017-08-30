@@ -7,7 +7,7 @@ const create = () => {
       value: create
     },
     'listen': {
-      value: () => {}
+      value: () => Promise.resolve(server)
     }
   })
 

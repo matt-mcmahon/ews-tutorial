@@ -50,11 +50,24 @@ test('ews.create -> server', async t => {
     const message = 'constructor property should NOT be enumerable'
     t.same(actual, expected, message)
   }
+})
+
+test('ews server.listen', async t => {
+  const server = await ews.create()
 
   {
     const actual = typeof server.listen
     const expected = 'function'
     const message = 'server should have a listen method'
+    t.same(actual, expected, message)
+  }
+
+  const listeningServer = server.listen()
+
+  {
+    const actual = listeningServer.constructor
+    const expected = Promise
+    const message = 'invoking server.listen should return a Promise'
     t.same(actual, expected, message)
   }
 })
