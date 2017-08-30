@@ -41,4 +41,11 @@ test('ews.create', async t => {
     const message = `server's constructor should be ews.create`
     t.same(actual, expected, message)
   }
+
+  {
+    const actual = server.propertyIsEnumerable('constructor')
+    const expected = false
+    const message = 'constructor property should NOT be enumerable'
+    t.same(actual, expected, message)
+  }
 })
