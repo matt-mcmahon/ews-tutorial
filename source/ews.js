@@ -7,6 +7,7 @@ const create = () => {
       value: create
     },
     'listen': {
+      enumerable: true,
       value: () => Promise.resolve(server)
     }
   })
