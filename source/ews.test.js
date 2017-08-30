@@ -25,7 +25,9 @@ test('ews.create', async t => {
     const message = 'invoking ews.create should return a Promise'
     t.same(actual, expected, message)
   }
+})
 
+test('ews.create -> server', async t => {
   const server = await ews.create()
 
   {
