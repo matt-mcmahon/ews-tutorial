@@ -25,4 +25,20 @@ test('ews.create', async t => {
     const message = 'invoking ews.create should return a Promise'
     t.same(actual, expected, message)
   }
+
+  const server = await ews.create()
+
+  {
+    const actual = typeof server
+    const expected = 'object'
+    const message = 'created server is an object'
+    t.same(actual, expected, message)
+  }
+
+  {
+    const actual = server.constructor
+    const expected = ews.create
+    const message = `server's constructor should be ews.create`
+    t.same(actual, expected, message)
+  }
 })
