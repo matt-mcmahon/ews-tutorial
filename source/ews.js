@@ -2,9 +2,15 @@
 'use strict'
 
 const create = () => {
-  const server = Object.defineProperty({}, 'constructor', {
-    value: create
+  const server = Object.defineProperties({}, {
+    'constructor': {
+      value: create
+    },
+    'listen': {
+      value: () => {}
+    }
   })
+
   return Promise.resolve(server)
 }
 

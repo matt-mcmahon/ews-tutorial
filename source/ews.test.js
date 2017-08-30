@@ -48,4 +48,11 @@ test('ews.create', async t => {
     const message = 'constructor property should NOT be enumerable'
     t.same(actual, expected, message)
   }
+
+  {
+    const actual = typeof server.listen
+    const expected = 'function'
+    const message = 'server should have a listen method'
+    t.same(actual, expected, message)
+  }
 })
