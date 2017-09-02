@@ -6,7 +6,8 @@
   "scripts": {
     "lint": "standard source/**/*.js",
     "pretest": "npm run lint",
-    "test": "blue-tape source/**/*.test.js | tap-spec"
+    "test": "blue-tape source/**/*.test.js | tap-spec",
+    "watch": "watch \"npm t\" source"
   },
   "keywords": [],
   "author": "Matt McMahon <matt@broken-toys.com> (https://broken-toys.com/)",
@@ -14,6 +15,7 @@
   "devDependencies": {
     "blue-tape": "^1.0.0",
     "standard": "^10.0.3",
-    "tap-spec": "^4.1.1"
+    "tap-spec": "^4.1.1",
+    "watch": "^1.0.2"
   }
 }
