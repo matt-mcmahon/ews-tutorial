@@ -28,8 +28,9 @@ const facadeFor = (server, listen, close) => ({
 const create = (http = require('http'), ...createServerArgs) => {
   const server = http.createServer(...createServerArgs)
 
-  const listen = (port = '::', host = 0) => new Promise((resolve, reject) => {
-    server.listen(port, host, () => {
+  const listen = (port = 0, hostname = '::') =>
+  new Promise((resolve, reject) => {
+    server.listen(port, hostname, () => {
       resolve(facade)
       server.removeListener('error', reject)
     })
