@@ -1,18 +1,50 @@
 // source/ews.js
 'use strict'
 
-const create = () => {
-  const server = Object.defineProperties({}, {
-    'constructor': {
-      value: create
-    },
-    'listen': {
-      enumerable: true,
-      value: () => Promise.resolve(server)
-    }
+const facadeFor = (server, listen, close) => ({
+  listen,
+  close,
+  get listening () {
+    return server.listening
+  },
+  get port () {
+    return server.address() ? server.address().port : undefined
+  },
+  get hostname () {
+    return server.address() ? server.address().address : undefined
+  },
+  constructor: create,
+  get [Symbol.toStringTag] () {
+    return 'EchoWebServer'
+  }
+})
+
+/**
+ * Returns an instance of `EchoWebServer`.
+ * @param {http} http Implementation of HTTP protocol to use.
+ *   Implementation should have a `createServer` method
+ * @param {[any]} createServerArgs Arguments that need to be passed to `http.createServer`
+ */
+const create = (http = require('http'), ...createServerArgs) => {
+  const server = http.createServer(...createServerArgs)
+
+  const listen = (port = '::', host = 0) => new Promise((resolve, reject) => {
+    server.listen(port, host, () => {
+      resolve(facade)
+      server.removeListener('error', reject)
+    })
+    server.once('error', reject)
   })
 
-  return Promise.resolve(server)
+  const close = () => new Promise((resolve, reject) => {
+    server.close(err => {
+      err ? reject(err) : resolve(facade)
+    })
+  })
+
+  const facade = facadeFor(server, listen, close)
+
+  return Promise.resolve(facade)
 }
 
 module.exports = {
