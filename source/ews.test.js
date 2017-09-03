@@ -103,6 +103,16 @@ test('ews.test.js', async t => {
       t.same(actual, expected, message)
     }
 
+    try {
+      await (await ews.create()).listen(server.port)
+      t.fail('binding a new server to the same port should fail')
+    } catch (err) {
+      const actual = err.code
+      const expected = 'EADDRINUSE'
+      const message = 'new server on same port should fail with "address in use" error'
+      t.same(actual, expected, message)
+    }
+
     await server.close()
 
     {

@@ -1,7 +1,8 @@
 // source/ews.js
 'use strict'
 
-const facadeFor = (server, listen, close) => ({
+const facadeFor = (server, listen, close) =>
+Object.freeze({
   listen,
   close,
   get listening () {
