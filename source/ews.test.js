@@ -4,25 +4,27 @@
 const test = require('blue-tape')
 const ews = require('./ews')
 
+const typeString = o => Object.prototype.toString.call(o)
+
 test('ews.test.js', async t => {
   {
-    const actual = typeof ews
-    const expected = 'object'
-    const message = 'ews should export an object'
+    const actual = typeString(ews)
+    const expected = '[object Object]'
+    const message = `ews should be "${expected}"`
     t.same(actual, expected, message)
   }
 
   {
     const actual = Object.keys(ews).sort()
     const expected = ['create'].sort()
-    const message = `expect enumerables: ${expected.join(', ')}`
+    const message = `enumerables should be: ${expected.join(', ')}`
     t.same(actual, expected, message)
   }
 
   {
-    const actual = typeof ews.create
-    const expected = 'function'
-    const message = 'ews.create should be a function'
+    const actual = typeString(ews.create)
+    const expected = '[object Factory]'
+    const message = `ews.create should be "${expected}"`
     t.same(actual, expected, message)
   }
 
@@ -30,51 +32,58 @@ test('ews.test.js', async t => {
     const server = await ews.create()
 
     {
+      const expected = `[object EchoWebServer]`
+      const actual = typeString(server)
+      const message = `type string for server should be "${expected}"`
+      t.same(actual, expected, message)
+    }
+
+    {
       const actual = server.constructor
       const expected = ews.create
-      const message = `server.constructor should be ews.create`
+      const message = `server.constructor should be "${expected.name}"`
       t.same(actual, expected, message)
     }
 
     {
       const actual = Object.keys(server).sort()
-      const expected = [ 'close', 'constructor', 'hostname', 'listen', 'listening', 'port' ].sort()
-      const message = `expected enumerables: ${expected.join(', ')}`
+      const expected = [ 'listen', 'close', 'hostname', 'listening', 'port' ].sort()
+      const message = `enumerables should be: ${expected.join(', ')}`
       t.same(actual, expected, message)
     }
 
     {
-      const actual = typeof server.close
-      const expected = 'function'
-      const message = 'server.close should be a function'
+      const actual = typeString(server.close)
+      const expected = '[object Function]'
+      const message = `server.close should be "${expected}"`
       t.same(actual, expected, message)
     }
 
     {
       const actual = server.hostname
       const expected = undefined
-      const message = 'server.hostname should be undefined'
-      t.same(actual, expected, message)
-    }
-
-    {
-      const actual = typeof server.listen
-      const expected = 'function'
-      const message = 'server.listen should be a function'
-      t.same(actual, expected, message)
-    }
-
-    {
-      const actual = server.listening
-      const expected = false
-      const message = 'server should not be listening'
+      const message = `server.hostname should be "${expected}"`
       t.same(actual, expected, message)
     }
 
     {
       const actual = server.port
       const expected = undefined
-      const message = 'server.port should be undefined'
+      const message = `server.port should be "${expected}"`
+      t.same(actual, expected, message)
+    }
+
+    {
+      const actual = server.listening
+      const expected = false
+      const message = `server.listening should be "${expected}"`
+      t.same(actual, expected, message)
+    }
+
+    {
+      const actual = typeString(server.listen)
+      const expected = '[object Function]'
+      const message = `server.listen should be "${expected}"`
       t.same(actual, expected, message)
     }
   })
@@ -92,25 +101,35 @@ test('ews.test.js', async t => {
 
     {
       const actual = server.port
-      const message = `server.port should not be nothing — is "${actual}"`
-      t.ok(actual, message)
+      const message = `server.port should be an integer — is "${actual}"`
+      t.ok(Number.isSafeInteger(actual), message)
+    }
+
+    {
+      const actual = server.port
+      const message = `server.port should be greater than zero — is "${actual}"`
+      t.ok(actual > 0, message)
     }
 
     {
       const actual = server.listening
       const expected = true
-      const message = 'server should be listening'
+      const message = `server.listening should be "${expected}"`
       t.same(actual, expected, message)
     }
 
-    try {
-      await (await ews.create()).listen(server.port)
-      t.fail('binding a new server to the same port should fail')
-    } catch (err) {
-      const actual = err.code
+    {
       const expected = 'EADDRINUSE'
-      const message = 'new server on same port should fail with "address in use" error'
-      t.same(actual, expected, message)
+      const message = `attempt to bind to a used port should fail with "${expected}" error`
+      try {
+        const serverWithDuplicatePort = await ews.create()
+        await serverWithDuplicatePort.listen(server.port)
+        t.fail(message)
+        await serverWithDuplicatePort.close()
+      } catch (err) {
+        const actual = err.code
+        t.same(actual, expected, message)
+      }
     }
 
     await server.close()
@@ -118,7 +137,7 @@ test('ews.test.js', async t => {
     {
       const actual = server.listening
       const expected = false
-      const message = 'server should NOT be listening'
+      const message = `server.listening should be "${expected}"`
       t.same(actual, expected, message)
     }
   })

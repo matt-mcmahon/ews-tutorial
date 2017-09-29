@@ -1,24 +1,41 @@
 // source/ews.js
 'use strict'
 
-const facadeFor = (server, listen, close) =>
-Object.freeze({
-  listen,
-  close,
-  get listening () {
-    return server.listening
-  },
-  get port () {
-    return server.address() ? server.address().port : undefined
-  },
-  get hostname () {
-    return server.address() ? server.address().address : undefined
-  },
-  constructor: create,
-  get [Symbol.toStringTag] () {
-    return 'EchoWebServer'
-  }
-})
+const facadeFor = (server, listen, close) => {
+  const getListening = () => server.listening
+
+  const getPort = () => server.address()
+    ? server.address().port
+    : undefined
+
+  const getHostname = () => server.address()
+    ? server.address().address
+    : undefined
+
+  return Object.freeze(Object.defineProperties({
+    listen,
+    close
+  }, {
+    listening: {
+      get: getListening,
+      enumerable: true
+    },
+    port: {
+      get: getPort,
+      enumerable: true
+    },
+    hostname: {
+      get: getHostname,
+      enumerable: true
+    },
+    constructor: {
+      value: create
+    },
+    [Symbol.toStringTag]: {
+      value: 'EchoWebServer'
+    }
+  }))
+}
 
 const create = (http = require('http'), ...createServerArgs) => {
   const server = http.createServer(...createServerArgs)
@@ -42,6 +59,12 @@ const create = (http = require('http'), ...createServerArgs) => {
 
   return Promise.resolve(facade)
 }
+
+Object.defineProperties(create, {
+  [Symbol.toStringTag]: {
+    get: () => 'Factory'
+  }
+})
 
 module.exports = {
   create
