@@ -20,12 +20,6 @@ Object.freeze({
   }
 })
 
-/**
- * Returns an instance of `EchoWebServer`.
- * @param {http} http Implementation of HTTP protocol to use.
- *   Implementation should have a `createServer` method
- * @param {[any]} createServerArgs Arguments that need to be passed to `http.createServer`
- */
 const create = (http = require('http'), ...createServerArgs) => {
   const server = http.createServer(...createServerArgs)
 
