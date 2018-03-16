@@ -6,7 +6,7 @@ const ews = require('./ews')
 
 const typeString = o => Object.prototype.toString.call(o)
 
-test('ews.test.js', async t => {
+test('Testing EWS Module Exports', async t => {
   {
     const actual = typeString(ews)
     const expected = '[object Object]'
@@ -27,10 +27,10 @@ test('ews.test.js', async t => {
     const message = `ews.create should be "${expected}"`
     t.same(actual, expected, message)
   }
+})
 
-  t.test(`creating a server`, async t => {
-    const server = await ews.create()
-
+ews.create().then(server => {
+  test(`server with default port/hostname`, async t => {
     {
       const expected = `[object EchoWebServer]`
       const actual = typeString(server)
@@ -47,7 +47,13 @@ test('ews.test.js', async t => {
 
     {
       const actual = Object.keys(server).sort()
-      const expected = [ 'listen', 'close', 'hostname', 'listening', 'port' ].sort()
+      const expected = [
+        'listen',
+        'close',
+        'hostname',
+        'listening',
+        'port'
+      ].sort()
       const message = `enumerables should be: ${expected.join(', ')}`
       t.same(actual, expected, message)
     }
@@ -88,10 +94,15 @@ test('ews.test.js', async t => {
     }
   })
 
-  test('server life cycle', async t => {
-    const server = await ews.create()
-
-    await server.listen()
+  test('listening server', async t => {
+    {
+      const message = `server should successfully listen`
+      try {
+        await server.listen()
+      } catch (err) {
+        t.fail(message)
+      }
+    }
 
     {
       const actual = server.hostname
@@ -119,20 +130,21 @@ test('ews.test.js', async t => {
     }
 
     {
-      const expected = 'EADDRINUSE'
-      const message = `attempt to bind to a used port should fail with "${expected}" error`
-      try {
-        const serverWithDuplicatePort = await ews.create()
-        await serverWithDuplicatePort.listen(server.port)
-        t.fail(message)
-        await serverWithDuplicatePort.close()
-      } catch (err) {
-        const actual = err.code
-        t.same(actual, expected, message)
-      }
+      const serverWithDuplicatePort = await ews.create()
+      const actual = () => serverWithDuplicatePort.listen(server.port)
+      const message = `attempt to bind to a used port should fail with "EADDRINUSE" error`
+      return t.shouldFail(actual(), message)
     }
+  })
 
-    await server.close()
+  test('closing server', async t => {
+    {
+      const actual = async () => {
+        await server.close()
+      }
+      const message = `closing a server should not throw`
+      t.doesNotThrow(actual, message)
+    }
 
     {
       const actual = server.listening
